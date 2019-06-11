@@ -79,7 +79,7 @@ layers:
         draw:
             polygons:
                 order: global.feature_order
-                color: [0.200,0.200,0.200]
+                color: [0.000,0.000,0.000]
 
         lakes:
             filter:
@@ -105,13 +105,13 @@ layers:
                     - { $zoom: { min: 15 } }
             draw:
                 polygons:
-                    color: [0.200,0.200,0.200]
+                    color: [0.000,0.000,0.000]
 
         other-water-areas:
             filter: { not: { kind: [ocean, lake, water, reservoir] }, $zoom: { min: 11 }, area: { min: 100 } }
             draw:
                 polygons:
-                    color: [0.200,0.200,0.200]
+                    color: [0.000,0.000,0.000]
 
     # roads:
     #     data: { source: xyz-osm }
@@ -204,8 +204,8 @@ styles:
     colorized-earth:
         shaders:
             uniforms:
-                u_tint: [0.100,0.100,0.100]
-                u_fill: [0.900,0.900,0.900]
+                u_tint: [0.900,0.900,0.900]
+                u_fill: [0.100,0.100,0.100]
             blocks:
                 filter: |
                     color.rgb = mix(u_tint.rgb, u_fill.rgb, color.rgb);
