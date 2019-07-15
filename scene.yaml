@@ -521,7 +521,7 @@ styles:
         mix: [elevation-ramp, terrain-pattern2]
         shaders:
             uniforms:
-                u_tint: [0.880,0.880,0.880]
+                u_tint: [0.800,0.800,0.800]
                 u_fill: [0.100,0.100,0.100]
             blocks:
                 filter: |
