@@ -30,7 +30,7 @@ fonts:
 
 textures:
     palette:
-        url: images/ramp.png
+        url: images/ramp2.png
 
 scene:
     background:
@@ -227,34 +227,97 @@ layers:
                     color: [0.900,0.900,0.900]
                     width: [[16,0px], [18,2px]]
 
+    landuse:
+        data: { source: mapzen }
+        draw:
+            polygons:
+                order: global.feature_order
+                visible: false
+            lines:
+                order: global.feature_order
+                visible: false
+        # tier1:
+        national_park:
+            filter:
+                all:
+                    - kind: [national_park, battlefield, protected_area]
+                any:
+                    - not: { operator: [ "United States Forest Service" ] }
+                    - protect_class: ['2','3','5']
+            draw:
+                polygons:
+                    style: terrain-pattern-park
+                    color: [0.500,0.500,0.500]
+                    visible: true
+            us_national_park:
+                # yosemite national park, death valley national park, grand canyon national park
+                filter:
+                    any:
+                        - operator: [ "United States National Park Service" ]
+                        - protect_class: ['2','3','5']
+                draw:
+                    polygons:
+                        style: terrain-pattern-park
+                        color: [0.500,0.500,0.500]
+                        visible: true
 
+        conservation:
+            filter:
+                $zoom: { min: 4 }
+                kind: [protected_area, nature_reserve, national_park]
+                not: { protect_class: ['2','3','5']}
+            draw:
+                polygons:
+                    style: terrain-pattern-park
+                    color: [0.750,0.750,0.750]
+                    visible: true
 
-    # buildings:
-    #     data: { source: mapzen, layer: buildings }
-    #     filter:
-    #         not: { location: underground }
-    #     draw:
-    #         polygons:
-    #             visible: false
-    #             order: 329
-    #             color: [0.95,0.950,0.950,0.25]
-    #             style: polygons_transparent
-    
-    #     footprints:
-    #         filter:
-    #             any:
-    #                 - { $zoom: [13], scale_rank: [1,2] }
-    #                 - { $zoom: [14], scale_rank: [1,2,3] }
-    #                 - { $zoom: [15], height: { min: 100 } }
-    #                 - { $zoom: [15], area: { min: 700 } }
-    #                 - { $zoom: [15], volume: { min: 100000 } }
-    #                 - { $zoom: [16], area: { min: 100 } }
-    #                 - { $zoom: [16], volume: { min: 50000 } }
-    #                 - { $zoom: { min: 17 }, area: true }
-    #         draw:
-    #             polygons:
-    #                 visible: true
+        national_forest_level_6:
+            filter:
+                all:
+                    - kind: forest
+                any:
+                    - protect_class: ['6']
+                    - operator: ['United States Forest Service']
+            draw:
+                polygons:
+                    style: terrain-pattern-park
+                    color: [0.400,0.400,0.400]
+                    visible: true
 
+        forest-landcover:
+            filter: { kind: [forest, natural_forest, wood, natural_wood, natural_park], $zoom: { min: 10 }, not: { operator: "United States Forest Service" } }
+            draw:
+                polygons:
+                    style: terrain-pattern-park
+                    color: [0.500,0.500,0.500]
+                    visible: true
+
+        parks-and-national-forests-not-national-park:
+            filter:
+                all:
+                    - $zoom: { min: 4 }
+                    - kind: [park, national_park]
+                any:
+                    - not: { operator: [ "United States National Park Service", "United States Forest Service" ] }
+                    - not: { protect_class: ['2','3','5','6'] }
+            # default for national forests and more?
+            draw:
+                polygons:
+                    style: terrain-pattern-park
+                    color: [0.960,0.960,0.960]
+                    visible: true
+            national_park:
+                #filter: function() { return feature.name && (feature.name.indexOf('National Park') > -1); }
+                filter:
+                    all:
+                        - kind: national_park
+                        - not: [ protect_class: ['2','3','5','6'], operator: [ "United States National Park Service"] ]
+                draw:
+                    polygons:
+                        style: terrain-pattern-park
+                        color: [0.950,0.950,0.950]
+                        visible: true
 
 
     places:
@@ -267,7 +330,7 @@ layers:
                 buffer: 3px
                 font:
                     family: global.text_font_family
-                    fill: [0.100,0.100,0.100]
+                    fill: [0.900,0.900,0.900]
             # END NOTE
 
         populated-places:
@@ -279,7 +342,7 @@ layers:
                     buffer: 42px
                     font:
                         size: [[5,9px],[8,10px],[12,11px]]
-                        stroke: { color: [0.900,0.900,0.900], width: 5px }
+                        stroke: { color: [0.100,0.100,0.100], width: 6px }
 
             # _text_early:
             #     filter: { $zoom: { max: 11 } }
@@ -433,25 +496,32 @@ styles:
 
     terrain-pattern-earth:
         base: polygons
-        mix: [elevation-ramp, terrain-pattern, colorized-earth]
-
-    terrain-pattern-water:
-        base: polygons
-        mix: [elevation-ramp, terrain-pattern, colorized-water]
-
-    colorized-earth:
+        mix: [elevation-ramp, terrain-pattern]
         shaders:
             uniforms:
-                u_tint: [0.900,0.900,0.900]
+                u_tint: [0.750,0.750,0.750]
                 u_fill: [0.100,0.100,0.100]
             blocks:
                 filter: |
                     color.rgb = mix(u_tint.rgb, u_fill.rgb, color.rgb);
 
-    colorized-water:
+    terrain-pattern-water:
+        base: polygons
+        mix: [elevation-ramp, terrain-pattern]
         shaders:
             uniforms:
                 u_tint: [0.190,0.190,0.190]
+                u_fill: [0.100,0.100,0.100]
+            blocks:
+                filter: |
+                    color.rgb = mix(u_tint.rgb, u_fill.rgb, color.rgb);
+
+    terrain-pattern-park:
+        base: polygons
+        mix: [elevation-ramp, terrain-pattern2]
+        shaders:
+            uniforms:
+                u_tint: [0.880,0.880,0.880]
                 u_fill: [0.100,0.100,0.100]
             blocks:
                 filter: |
@@ -477,6 +547,27 @@ styles:
                     // reset normal to prevent standard terrain shading mixing with dots
                     normal = vec3(0,0,1);
 
+    terrain-pattern2:
+        base: polygons
+        mix: [elevation-normal2, functions-zoom, polygons-dots]
+        shaders:
+            defines:
+                ZOOM_START: 0.
+                ZOOM_END: 13.
+                DOTS_DIR: vec3(0.600,-0.950,0.520)
+                DOTS_COLOR: vec3(0.)
+                DOTS_BACKGROUND_COLOR: vec3(1.)
+                DOTS_SCALE: 40.
+                DOTS_SIZE: mix(shade*10.,shade*2.,zoom())
+            blocks:
+                normal: |
+                    float shade = dot(normal, DOTS_DIR);
+                    // modify brightness and contrast
+                    shade = shade*shade*shade * -2. + .58;
+                    // reset normal to prevent standard terrain shading mixing with dots
+                    normal = vec3(0,0,1);
+
+
     elevation-normal:
         raster: custom
         shaders:
@@ -485,7 +576,17 @@ styles:
             blocks:
                 normal: |
                     vec4 normal_elv_raster = sampleRaster(int(NORMAL_TEXTURE_INDEX));
-                    normal = (normal_elv_raster.rgb-.5)*2.;
+                    normal = (normal_elv_raster.rgb-.1)*2.;
+
+    elevation-normal2:
+        raster: custom
+        shaders:
+            defines:
+                NORMAL_TEXTURE_INDEX: 0
+            blocks:
+                normal: |
+                    vec4 normal_elv_raster = sampleRaster(int(NORMAL_TEXTURE_INDEX));
+                    normal = (normal_elv_raster.rgb-.2)*2.;
 
     elevation-ramp:
         shaders:
