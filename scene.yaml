@@ -75,14 +75,6 @@ layers:
                 order: global.feature_order
                 color: [0.100,0.100,0.100] #color of stripes
 
-    # landuse:
-    #     data: { source: mapzen }
-    #     draw:
-    #         polygons:
-    #             style: dash-terrain-landuse
-    #             order: global.feature_order
-    #             color: [0.000,0.000,0.000]
-
     water:
         data: { source: mapzen, layer: water }
         draw:
@@ -197,13 +189,13 @@ layers:
                     filter: {is_tunnel: true, $zoom: {min: 13} }
                     draw:
                         lines:
-                            color: [0.100,0.100,0.100]
+                            color: [0.350,0.350,0.350]
 
             tunnel:
                 filter: {is_tunnel: true, $zoom: {min: 13} }
                 draw:
                     lines:
-                        color: [0.100,0.100,0.100]
+                        color: [0.350,0.350,0.350]
 
             highway_bridge:
                 filter: {is_bridge: true}
@@ -290,7 +282,7 @@ layers:
             filter: { kind: [forest, natural_forest, wood, natural_wood, natural_park], $zoom: { min: 10 }, not: { operator: "United States Forest Service" } }
             draw:
                 polygons:
-                    style: terrain-pattern-park
+                    style: terrain-pattern-forest
                     color: [0.500,0.500,0.500]
                     visible: true
 
@@ -319,6 +311,33 @@ layers:
                         style: terrain-pattern-park
                         color: [0.950,0.950,0.950]
                         visible: true
+
+    buildings:
+        data: { source: mapzen, layer: buildings }
+        filter:
+            not: { location: underground }
+        draw:
+            polygons:
+                visible: false
+                order: 329
+                color: [0.100,0.100,0.100,0.65]
+                style: polygons_transparent
+
+        footprints:
+            filter:
+                any:
+                    - { $zoom: [13], scale_rank: [1,2] }
+                    - { $zoom: [14], scale_rank: [1,2,3] }
+                    - { $zoom: [15], height: { min: 100 } }
+                    - { $zoom: [15], area: { min: 700 } }
+                    - { $zoom: [15], volume: { min: 100000 } }
+                    - { $zoom: [16], area: { min: 100 } }
+                    - { $zoom: [16], volume: { min: 50000 } }
+                    - { $zoom: { min: 17 }, area: true }
+            draw:
+                polygons:
+                    visible: true
+
 
 
     places:
@@ -500,7 +519,7 @@ styles:
         mix: [elevation-ramp, terrain-pattern]
         shaders:
             uniforms:
-                u_tint: [0.750,0.750,0.750]
+                u_tint: [0.550,0.550,0.550]
                 u_fill: [0.100,0.100,0.100]
             blocks:
                 filter: |
@@ -520,6 +539,17 @@ styles:
     terrain-pattern-park:
         base: polygons
         mix: [elevation-ramp, terrain-pattern2]
+        shaders:
+            uniforms:
+                u_tint: [0.500,0.500,0.500]
+                u_fill: [0.100,0.100,0.100]
+            blocks:
+                filter: |
+                    color.rgb = mix(u_tint.rgb, u_fill.rgb, color.rgb);
+
+    terrain-pattern-forest:
+        base: polygons
+        mix: [elevation-ramp, terrain-pattern3]
         shaders:
             uniforms:
                 u_tint: [0.600,0.600,0.600]
@@ -565,6 +595,26 @@ styles:
                     float shade = dot(normal, DOTS_DIR);
                     // modify brightness and contrast
                     shade = shade*shade*shade * -2. + .58;
+                    // reset normal to prevent standard terrain shading mixing with dots
+                    normal = vec3(0,0,1);
+
+    terrain-pattern3:
+        base: polygons
+        mix: [elevation-normal2, functions-zoom, polygons-dots]
+        shaders:
+            defines:
+                ZOOM_START: 0.
+                ZOOM_END: 13.
+                DOTS_DIR: vec3(0.600,-0.950,0.520)
+                DOTS_COLOR: vec3(0.)
+                DOTS_BACKGROUND_COLOR: vec3(1.)
+                DOTS_SCALE: 15.
+                DOTS_SIZE: mix(shade*10.,shade*2.,zoom())
+            blocks:
+                normal: |
+                    float shade = dot(normal, DOTS_DIR);
+                    // modify brightness and contrast
+                    shade = shade*shade*shade * -2. + .31;
                     // reset normal to prevent standard terrain shading mixing with dots
                     normal = vec3(0,0,1);
 
