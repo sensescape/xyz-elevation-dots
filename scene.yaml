@@ -229,6 +229,8 @@ layers:
 
     landuse:
         data: { source: mapzen }
+        filter:
+            $zoom: { min: 7 }
         draw:
             polygons:
                 order: global.feature_order
@@ -263,7 +265,6 @@ layers:
 
         conservation:
             filter:
-                $zoom: { min: 4 }
                 kind: [protected_area, nature_reserve, national_park]
                 not: { protect_class: ['2','3','5']}
             draw:
@@ -521,7 +522,7 @@ styles:
         mix: [elevation-ramp, terrain-pattern2]
         shaders:
             uniforms:
-                u_tint: [0.800,0.800,0.800]
+                u_tint: [0.600,0.600,0.600]
                 u_fill: [0.100,0.100,0.100]
             blocks:
                 filter: |
@@ -557,7 +558,7 @@ styles:
                 DOTS_DIR: vec3(0.600,-0.950,0.520)
                 DOTS_COLOR: vec3(0.)
                 DOTS_BACKGROUND_COLOR: vec3(1.)
-                DOTS_SCALE: 40.
+                DOTS_SCALE: 37.
                 DOTS_SIZE: mix(shade*10.,shade*2.,zoom())
             blocks:
                 normal: |
@@ -586,7 +587,7 @@ styles:
             blocks:
                 normal: |
                     vec4 normal_elv_raster = sampleRaster(int(NORMAL_TEXTURE_INDEX));
-                    normal = (normal_elv_raster.rgb-.2)*2.;
+                    normal = (normal_elv_raster.rgb-.15)*2.;
 
     elevation-ramp:
         shaders:
