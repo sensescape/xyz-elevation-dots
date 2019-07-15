@@ -320,7 +320,7 @@ layers:
             polygons:
                 visible: false
                 order: 329
-                color: [0.100,0.100,0.100,0.65]
+                color: [0.100,0.100,0.100,0.85]
                 style: polygons_transparent
 
         footprints:
