@@ -19,13 +19,22 @@ global:
     # https://mapzen.com/documentation/overview/#developer-accounts-and-api-keys
     sdk_api_key: '3eqm2_bfTNGZ85ar20fVyA'     # set this value to your Mapzen API key
 
+    text_font_family: 'Orbitron'
+
+# Fonts
+fonts:
+    Orbitron:
+        - weight: normal # Regular
+          # url: https://fonts.gstatic.com/s/orbitron/v7/94ug0rEgQO_WuI_xKJMFc3YhjbSpvc47ee6xR_80Hnw.woff
+          url: fonts/94ug0rEgQO_WuI_xKJMFc3YhjbSpvc47ee6xR_80Hnw.woff
+
 textures:
     palette:
         url: images/ramp.png
 
 scene:
     background:
-        color: [0.200,0.200,0.200]
+        color: [0.100,0.100,0.100]
 
 sources:
     # mapzen:
@@ -64,7 +73,7 @@ layers:
             polygons:
                 style: terrain-pattern-earth
                 order: global.feature_order
-                color: [0.690,0.690,0.690] #color of stripes
+                color: [0.100,0.100,0.100] #color of stripes
 
     # landuse:
     #     data: { source: mapzen }
@@ -78,8 +87,9 @@ layers:
         data: { source: mapzen, layer: water }
         draw:
             polygons:
+                style: terrain-pattern-water
                 order: global.feature_order
-                color: [0.000,0.000,0.000]
+                color: [0.100,0.100,0.100]
 
         lakes:
             filter:
@@ -105,40 +115,118 @@ layers:
                     - { $zoom: { min: 15 } }
             draw:
                 polygons:
-                    color: [0.000,0.000,0.000]
+                    color: [0.100,0.100,0.100]
 
         other-water-areas:
             filter: { not: { kind: [ocean, lake, water, reservoir] }, $zoom: { min: 11 }, area: { min: 100 } }
             draw:
                 polygons:
-                    color: [0.000,0.000,0.000]
+                    color: [0.100,0.100,0.100]
 
-    # roads:
-    #     data: { source: xyz-osm }
-    #     filter: { not: { kind: [rail, ferry] } }
-    #     draw:
-    #         lines:
-    #             order: global.feature_order
-    #             color: [0.633,0.641,0.645]
-    #             width: [[7,0.0px], [10, .5px], [15, .75px], [17, 5m]]
-    #     highway:
-    #         filter: { kind: highway }
-    #         draw:
-    #             lines:
-    #                 order: 5
-    #                 width: [[8,0px], [8,.25px], [11, 1.5px], [14, 2px], [16, 4px], [17, 10m]]
-    #         link:
-    #             filter: { is_link: true } # on- and off-ramps, etc
-    #             draw:
-    #                 lines:
-    #                     width: [[8,0px], [14, 3px], [16, 5px], [18, 10m]]
-    #             tunnel-link:
-    #                 filter: {is_tunnel: true, $zoom: {min: 13} }
-    #     tunnel:
-    #         filter: {is_tunnel: true }
-    #         draw:
-    #             lines:
-    #                 order: 6
+    roads:
+        data: { source: mapzen, layer: roads }
+        draw:
+            lines:
+                width: 1px
+                order: global.feature_order
+                outline:
+                    order: 352
+
+        early:
+            filter: { $zoom: { max: 15 } }
+            draw:
+                lines:
+                    outline:
+                        order: global.feature_order
+
+        bridges-tunnels:
+            filter: { any: [is_bridge: true, is_tunnel: true] }
+            draw:
+                lines:
+                    outline:
+                        order: global.feature_order
+
+        # default outlines starting at zoom 16
+        default-outline-width:
+            filter: { $zoom: { min: 16 } }
+            draw:
+                lines:
+                    outline:
+                        width: function () { return 3/16 * Math.log($zoom); }
+
+        natural_earth_highways:
+            filter: { $zoom: { min: 5, max: 8 } }
+            draw:
+                lines:
+                    cap: round
+                    join: round
+                    color: [0.900,0.900,0.900]
+                    width: 1px
+            major_road:
+                filter: { kind: major_road }
+                draw:
+                    lines:
+                        color: [0.900,0.900,0.900]
+                        width: 0.5px
+            ferry:
+                filter: { kind: ferry }
+                draw:
+                    lines:
+                        visible: false
+
+
+        highway:
+            filter: { kind: highway, $zoom: { min: 8 } }
+            draw:
+                lines:
+                    color: [0.900,0.900,0.900]
+                    width: [[5, 0px], [8, 1px], [17, 4px]]
+
+            link:
+                filter: { is_link: true } # on- and off-ramps, etc
+                draw:
+                    lines:
+                        color: [0.900,0.900,0.900]
+                        width: 1px
+                early_link:
+                    filter: { $zoom: { max: 15 } }
+                    draw:
+                        lines:
+                            order: 352
+                tunnel-link:
+                    filter: {is_tunnel: true, $zoom: {min: 13} }
+                    draw:
+                        lines:
+                            color: [0.100,0.100,0.100]
+
+            tunnel:
+                filter: {is_tunnel: true, $zoom: {min: 13} }
+                draw:
+                    lines:
+                        color: [0.100,0.100,0.100]
+
+            highway_bridge:
+                filter: {is_bridge: true}
+                draw:
+                    lines:
+                        cap: round
+                        outline:
+                            cap: butt
+
+        major_road:
+            filter: { kind: major_road, $zoom: { min: 13 } }
+            draw:
+                lines:
+                    color: [0.900,0.900,0.900]
+                    width: [[13,0px], [18,4px]]
+
+        minor_road:
+            filter: { kind: minor_road, not: { kind_detail: service }, $zoom: { min: 16 } }
+            draw:
+                lines:
+                    color: [0.900,0.900,0.900]
+                    width: [[16,0px], [18,2px]]
+
 
 
     # buildings:
@@ -147,12 +235,11 @@ layers:
     #         not: { location: underground }
     #     draw:
     #         polygons:
-    #             style: dash-pattern-bldgs
     #             visible: false
     #             order: 329
-    #             color: [0.263,0.263,0.263]
-    #             # style: polygons_transparent
-    #
+    #             color: [0.95,0.950,0.950,0.25]
+    #             style: polygons_transparent
+    
     #     footprints:
     #         filter:
     #             any:
@@ -168,43 +255,203 @@ layers:
     #             polygons:
     #                 visible: true
 
-            # extrude:
-            #     filter:
-            #         all:
-            #             - any:
-            #                 - { $zoom: [15], height: { min: 250 } }
-            #                 - { $zoom: [15], area: { min: 9000 } }
-            #                 - { $zoom: [15], volume: { min: 150000 } }
-            #                 - { $zoom: [16], height: { min: 100 } }
-            #                 - { $zoom: [16], area: { min: 3500 } }
-            #                 - { $zoom: [16], volume: { min: 50000 } }
-            #                 - { $zoom: [17], area: { min: 500 } }
-            #                 - { $zoom: [17], volume: { min: 15000 } }
-            #                 - { $zoom: { min: 18 } }
-            #             - not:
-            #                 - layer: [-1, -2, -3, -4, -5]
+
+
+    places:
+        data: { source: mapzen, layer: places }
+        filter:
+            name: true
+        draw:
+            text-blend-order:
+                visible: false    # labels are enabled by each layer below
+                buffer: 3px
+                font:
+                    family: global.text_font_family
+                    fill: [0.100,0.100,0.100]
+            # END NOTE
+
+        populated-places:
+            filter:
+                kind: locality
+            draw:
+                text-blend-order:
+                    visible: true
+                    buffer: 42px
+                    font:
+                        size: [[5,9px],[8,10px],[12,11px]]
+                        stroke: { color: [0.900,0.900,0.900], width: 5px }
+
+            # _text_early:
+            #     filter: { $zoom: { max: 11 } }
             #     draw:
-            #         polygons:
-            #             visible: extrude
-            #             order: 438
-            #             color: |
-            #                 function () {
-            #                     var h = feature.height || 20;
-            #                     h = Math.min((h + 75)/ 255, .5); // max brightness: .5
-            #                     h = Math.max(h, .1); // min brightness: .1
-            #                     return [h, h, h];
-            #                 }
-            #             extrude: global.building_extrude_height
+            #         text-blend-order:
+            #             visible: false
+
+
+            # HACK
+            # NOTE: These should use icon: buffer instead of going visible: false, but there are problems using icon here :(
+            # This fixes Paris area, but causes problems for small places in the USA eg Table Bluff near Eureka, California.
+            funky-village:
+                filter: { $zoom: [11], population: { max: 1000 }, kind_detail: [village] }
+                draw:
+                    text-blend-order:
+                        visible: false
+            funky-isolated_dwelling:
+                filter: { $zoom: [13], kind_detail: [isolated_dwelling] }
+                draw:
+                    text-blend-order:
+                        visible: false
+            hamlet:
+                filter: { $zoom: [13], kind_detail: hamlet }
+                draw:
+                    text-blend-order:
+                        visible: false
+            # END HACK
+
+            # someone in London and Salt Lake City thought neighbourhoods should be tagged place: locality
+            # They were wrong
+            funky-fake-neighbourhoods:
+                filter: { $zoom: { min: 13 }, kind_detail: [locality] }
+                draw:
+                    text-blend-order:
+                        visible: false
+
+
+            population-10m-up:
+                filter:
+                    population: { min: 10000000 }
+                draw:
+                    text-blend-order:
+                        priority: 6
+                        font:
+                            size: [[2,11px],[6,15px],[8,18px],[10,20px],[12,20px],[13,0px]]
+            population-5m-10m:
+                filter:
+                    population: { min: 5000000, max: 10000000 }
+                draw:
+                    text-blend-order:
+                        priority: 7
+                        font:
+                            size: [[4,10px],[6,14px],[8,18px],[10,20px],[12,20px],[13,0px]]
+            population-1m-5m:
+                filter:
+                    population: { min: 1000000, max: 5000000 }
+                draw:
+                    text-blend-order:
+                        priority: 9
+                        font:
+                            size: [[4,10px],[6,14px],[8,15px],[12,18px],[13,0px]]
+            population-500k-1m:
+                filter:
+                    population: { min: 500000, max: 1000000 }
+                draw:
+                    text-blend-order:
+                        priority: 11
+                        font:
+                            size: [[5,10px],[8,12px],[10,14px],[12,16px],[13,0px]]
+            population-200k-500k:
+                filter:
+                    population: { min: 200000, max: 500000 }
+                draw:
+                    text-blend-order:
+                        priority: 13
+                        font:
+                            size: [[6,10px],[8,14px],[10,15px],[12,16px],[13,0px]]
+            population-100k-200k:
+                filter:
+                    population: { min: 100000, max: 200000 }
+                draw:
+                    text-blend-order:
+                        priority: 15
+                        font:
+                            size: [[6,10px],[8,12px],[14,14px],[15,0px]]
+            population-50k-100k:
+                filter:
+                    population: { min: 50000, max: 100000 }
+                draw:
+                    text-blend-order:
+                        priority: 17
+                        font:
+                            size: [[6,10px],[8,12px],[14,14px],[15,0px]]
+            population-20k-50k:
+                filter:
+                    population: { min: 20000, max: 50000 }
+                draw:
+                    text-blend-order:
+                        priority: 19
+                        font:
+                            size: [[9,10px],[14,12px],[15,0px]]
+            population-10k-20k:
+                filter:
+                    population: { min: 10000, max: 20000 }
+                draw:
+                    text-blend-order:
+                        priority: 21
+                        font:
+                            size: [[9, 10px],[14, 12px],[15, 0px]]
+            population-5k-10k:
+                filter:
+                    population: { min: 5000, max: 10000 }
+                draw:
+                    text-blend-order:
+                        priority: 23
+                        font:
+                            size: [[9,10px], [14,12px], [15,0px]]
+            population-2k-5k:
+                filter:
+                    population: { min: 2000, max: 5000 }
+                draw:
+                    text-blend-order:
+                        priority: 25
+                        font:
+                            size: [[9,10px], [14,12px], [15,0px]]
+            population-1k-2k:
+                filter:
+                    population: { min: 1000, max: 2000 }
+                draw:
+                    text-blend-order:
+                        priority: 27
+                        font:
+                            size: [[9, 10px], [14, 12px], [15, 0px]]
+            population-200-1k:
+                filter:
+                    population: { min: 200, max: 1000 }
+                draw:
+                    text-blend-order:
+                        priority: 28
+                        font:
+                            size: [[9, 10px], [14, 11px], [15, 0px]]
 
 styles:
+    polygons_transparent:
+        base: polygons
+        blend: overlay
+
+    text-blend-order:
+        base: text
+        blend_order: 1
+
     terrain-pattern-earth:
         base: polygons
         mix: [elevation-ramp, terrain-pattern, colorized-earth]
+
+    terrain-pattern-water:
+        base: polygons
+        mix: [elevation-ramp, terrain-pattern, colorized-water]
 
     colorized-earth:
         shaders:
             uniforms:
                 u_tint: [0.900,0.900,0.900]
+                u_fill: [0.100,0.100,0.100]
+            blocks:
+                filter: |
+                    color.rgb = mix(u_tint.rgb, u_fill.rgb, color.rgb);
+
+    colorized-water:
+        shaders:
+            uniforms:
+                u_tint: [0.190,0.190,0.190]
                 u_fill: [0.100,0.100,0.100]
             blocks:
                 filter: |
@@ -226,7 +473,7 @@ styles:
                 normal: |
                     float shade = dot(normal, DOTS_DIR);
                     // modify brightness and contrast
-                    shade = shade*shade*shade * -2. + .65;
+                    shade = shade*shade*shade * -2. + .58;
                     // reset normal to prevent standard terrain shading mixing with dots
                     normal = vec3(0,0,1);
 
@@ -354,6 +601,37 @@ styles:
                     // Normalize the attribute position of a vertex
                     v_pos = modelPosition().xyz;
 
+    # space-tile:
+    #     doc:
+    #         author:
+    #             name: Patricio Gonzalez Vivo
+    #             twitter: patriciogv
+    #         description: 'Get the position on the tile
+
+    #             '
+    #         licence: MIT
+    #         tangram-version: 0.0.7
+    #         version: 0.0.1
+    #     shaders:
+    #         blocks:
+    #             global: "// Variant to be add to both vertex and fragments shaders\n\
+    #                 #ifndef v_pos\nvarying vec3 v_pos;\n#endif\n\n//\n// Get the coordinates\
+    #                 \ in tile space\n// ================================\nvec2 getTileCoords()\
+    #                 \ {\n    return fract(v_pos.xy);\n}\n"
+    #             position: '// Normalize the attribute position of a vertex
+
+    #                 v_pos = modelPosition().xyz;'
+    #     test:
+    #         tile:
+    #             blocks:
+    #                 color: 'vec2 st = getTileCoords();
+
+    #                     color.rg += fract(st*3.);
+
+    #                     '
+    #             defines:
+    #                 v_pos: v_texcoord
+
     block:
         shaders:
             defines:
@@ -367,38 +645,7 @@ styles:
                 TWO_PI: 6.283185307179586
                 deg2rad(d): (((d)*3.1415926535897932384626433832795)/180.0)
                 rad2deg(d): (((d)*180.0)/3.1415926535897932384626433832795)
-    elevation-stripes:
-        base: polygons
-        blend: inlay
-        doc:
-            author:
-                name: Patricio Gonzalez Vivo
-                twitter: patriciogv
-            description: 'Perfect for the `landuse` layer on your elevation maps,
-                the `elevation-stripe` modules use the color of the layer to draw
-                a stripe pattern that changes width based on the surface of the terrain.
 
-                '
-            examples:
-                stripes:
-                    img: https://tangrams.github.io/tangram-sandbox/styles/elevation-stripes.png
-                    url: https://tangrams.github.io/tangram-sandbox/styles/elevation-stripes.yaml
-            licence: MIT
-            tangram-version: 0.0.7
-            version: 0.0.1
-        lighting: false
-        mix:
-        - polygons-diagonal-stripes
-        raster: custom
-        shaders:
-            defines:
-                NORMAL_TEXTURE_INDEX: 0
-                STRIPES_ALPHA: 0.2
-                STRIPES_DIR: vec3(-0.600,-0.420,0.600)
-                STRIPES_PCT: 1.6
-                STRIPES_SCALE: 30.0
-                STRIPES_WIDTH: dot((sampleRaster(int(NORMAL_TEXTURE_INDEX)).rgb-.5)*2.,
-                    STRIPES_DIR)*STRIPES_PCT
     functions-aastep:
         doc:
             author:
@@ -422,170 +669,3 @@ styles:
                     \ step(threshold, value);\n        #endif  \n    #else\n     \
                     \   return step(threshold, value);\n    #endif\n}"
             extensions: OES_standard_derivatives
-    geometry-matrices:
-        doc:
-            author:
-                name: Patricio Gonzalez Vivo
-                twitter: patriciogv
-            description: 'Useful set of functions to construct scale, rotation and
-                translation of 2, 3 or 4 dimensions. For more information about matrices
-                read [this chapter from The Book of Shaders](http://thebookofshaders.com/08/)
-
-                '
-            licence: MIT
-            tangram-version: 0.0.7
-            version: 0.0.1
-        mix:
-        - block
-        shaders:
-            blocks:
-                global: "// Rotate in 2, 3 and 4 dimensions\n// ================================\n\
-                    mat2 rotate2D (float angle) {\n    return mat2(cos(angle),-sin(angle),\n\
-                    \                sin(angle),cos(angle));\n}\n#ifdef TANGRAM_FRAGMENT_SHADER\n\
-                    vec2 rotate2D (vec2 st, float a) {\n    return (rotate2D(a)*(st-.5))+.5;\n\
-                    }\n#endif\nmat3 rotateX3D (float phi) {\n    return mat3(\n  \
-                    \      vec3(1.,0.,0.),\n        vec3(0.,cos(phi),-sin(phi)),\n\
-                    \        vec3(0.,sin(phi),cos(phi)));\n}\nmat4 rotateX4D (float\
-                    \ phi) {\n    return mat4(\n        vec4(1.,0.,0.,0),\n      \
-                    \  vec4(0.,cos(phi),-sin(phi),0.),\n        vec4(0.,sin(phi),cos(phi),0.),\n\
-                    \        vec4(0.,0.,0.,1.));\n}\nmat3 rotateY3D (float theta)\
-                    \ {\n    return mat3(\n        vec3(cos(theta),0.,-sin(theta)),\n\
-                    \        vec3(0.,1.,0.),\n        vec3(sin(theta),0.,cos(theta)));\n\
-                    }\nmat4 rotateY4D (float theta) {\n    return mat4(\n        vec4(cos(theta),0.,-sin(theta),0),\n\
-                    \        vec4(0.,1.,0.,0.),\n        vec4(sin(theta),0.,cos(theta),0.),\n\
-                    \        vec4(0.,0.,0.,1.));\n}\nmat3 rotateZ3D (float psi) {\n\
-                    \    return mat3(\n        vec3(cos(psi),-sin(psi),0.),\n    \
-                    \    vec3(sin(psi),cos(psi),0.),\n        vec3(0.,0.,1.));\n}\n\
-                    mat4 rotateZ4D (float psi) {\n    return mat4(\n        vec4(cos(psi),-sin(psi),0.,0),\n\
-                    \        vec4(sin(psi),cos(psi),0.,0.),\n        vec4(0.,0.,1.,0.),\n\
-                    \        vec4(0.,0.,0.,1.));\n}\n//\n// Scale 4 dimensions\n//\
-                    \ ================================\nmat4 scale4D (float x, float\
-                    \ y, float z) {\n    return mat4(\n        vec4(x,   0.0, 0.0,\
-                    \ 0.0),\n        vec4(0.0, y,   0.0, 0.0),\n        vec4(0.0,\
-                    \ 0.0, z,   0.0),\n        vec4(0.0, 0.0, 0.0, 1.0)\n    );\n\
-                    }\n//\n// Translate in 4 dimensions\nmat4 translate4D (float x,\
-                    \ float y, float z) {\n    return mat4(\n        vec4(1.0, 0.0,\
-                    \ 0.0, 0.0),\n        vec4(0.0, 1.0, 0.0, 0.0),\n        vec4(0.0,\
-                    \ 0.0, 1.0, 0.0),\n        vec4(x,   y,   z,   1.0)\n    );\n\
-                    }\n"
-    patterns-stripes:
-        doc:
-            author:
-                name: Patricio Gonzalez Vivo
-                twitter: patriciogv
-            description: "Collection of functions to draw stripes. To learn more about\
-                \ patterns check [this chapter from the Book of Shaders](https://thebookofshaders.com/09/)\
-                \    \n"
-            examples:
-                grain-area:
-                    img: https://tangrams.github.io/tangram-sandbox/styles/grain-area.png
-                    lines: 26
-                    url: https://tangrams.github.io/tangram-sandbox/styles/grain-area.yaml
-                press:
-                    img: https://tangrams.github.io/tangram-sandbox/styles/press.png
-                    lines: 150
-                    url: https://tangrams.github.io/tangram-sandbox/styles/press.yaml
-                radar:
-                    img: https://tangrams.github.io/tangram-sandbox/styles/radar.png
-                    url: https://tangrams.github.io/tangram-sandbox/styles/radar.yaml
-            licence: MIT
-            tangram-version: 0.0.7
-            version: 0.0.1
-        mix:
-        - functions-aastep
-        - geometry-matrices
-        shaders:
-            blocks:
-                global: "// Return a distance function of stripes\nfloat stripesDF\
-                    \ (vec2 st) {\n    return abs(sin(st.y*PI));\n}\n\n// Adjustable\
-                    \ width stripes\nfloat stripes (vec2 st, float width) {\n    return\
-                    \ aastep(width, stripesDF(st));\n}\n\n// Adjustable Angle\nfloat\
-                    \ stripes (vec2 st, float width, float angle) {\n    st = rotate2D(angle)\
-                    \ * st;\n    return stripes(st, width);\n}\n\n// Faster optimisation\
-                    \ of diagonal stripes\nfloat diagonalStripes (vec2 st) {\n   \
-                    \ vec2 i_st = floor(st);\n    vec2 f_st = fract(st);\n    if (mod(i_st.y,2.)\
-                    \ - mod(i_st.x,2.) == 0.) {\n        return 1.0 - aastep(f_st.x,f_st.y);\n\
-                    \    } else {\n        return aastep(f_st.x,f_st.y);\n    }\n\
-                    }\n\n// Faster optimisation of diagonal stripes with controlable\
-                    \ width\nfloat diagonalStripes (vec2 st, float width) {\n    st.y\
-                    \ -= st.x;\n    return stripes(st, width);\n}"
-            defines:
-                PI: 3.141592653589793
-    polygons-diagonal-stripes:
-        base: polygons
-        doc:
-            author:
-                name: Patricio Gonzalez Vivo
-                twitter: patriciogv
-            description: 'Apply a diagonal stripe pattern to the polygon style. To
-                learn more about patterns check [this chapter from the Book of Shaders](https://thebookofshaders.com/09/)
-
-                '
-            licence: MIT
-            tangram-version: 0.0.7
-            version: 0.0.1
-        mix:
-        - patterns-stripes
-        - space-tile
-        shaders:
-            blocks:
-                color: "color.a = diagonalStripes( (getTileCoords()*0.9999)*floor(STRIPES_SCALE),\
-                    \ \n                            STRIPES_WIDTH) * STRIPES_ALPHA;"
-            defines:
-                STRIPES_ALPHA: 1.0
-                STRIPES_SCALE: 2.0
-                STRIPES_WIDTH: 0.5
-        ui:
-            shaders:
-                defines:
-                    STRIPES_ALPHA:
-                        label: Alpha
-                        range:
-                            max: 1.0
-                            min: 0.0
-                            step: 0.01
-                        type: number
-                    STRIPES_SCALE:
-                        label: Scale
-                        range:
-                            max: 1000.0
-                            min: 1.0
-                            step: 1.0
-                        type: number
-                    STRIPES_WIDTH:
-                        label: Alpha
-                        range:
-                            max: 1.0
-                            min: 0.0
-                            step: 0.01
-                        type: number
-    space-tile:
-        doc:
-            author:
-                name: Patricio Gonzalez Vivo
-                twitter: patriciogv
-            description: 'Get the position on the tile
-
-                '
-            licence: MIT
-            tangram-version: 0.0.7
-            version: 0.0.1
-        shaders:
-            blocks:
-                global: "// Variant to be add to both vertex and fragments shaders\n\
-                    #ifndef v_pos\nvarying vec3 v_pos;\n#endif\n\n//\n// Get the coordinates\
-                    \ in tile space\n// ================================\nvec2 getTileCoords()\
-                    \ {\n    return fract(v_pos.xy);\n}\n"
-                position: '// Normalize the attribute position of a vertex
-
-                    v_pos = modelPosition().xyz;'
-        test:
-            tile:
-                blocks:
-                    color: 'vec2 st = getTileCoords();
-
-                        color.rg += fract(st*3.);
-
-                        '
-                defines:
-                    v_pos: v_texcoord
