@@ -9,6 +9,8 @@
 ### Hong Kong
 [https://sensescape.github.io/xyz-elevation-dots/#12/22.2629/-245.8196](https://sensescape.github.io/xyz-elevation-dots/#12/22.2629/-245.8196)
 
+![DOTS](https://raw.githubusercontent.com/sensescape/xyz-elevation-dots/master/images/xyz-elevation-dots-map1.jpg)
+
 ### Explore xyz
 
 [https://explore.xyz.here.com](https://explore.xyz.here.com)
