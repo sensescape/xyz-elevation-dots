@@ -1,4 +1,4 @@
-![GRAPHIC SERIES](https://raw.githubusercontent.com/sensescape/xyz-elevation-dots/master/images/dot_title.jpg)
+![GRAPHIC SERIES](https://raw.githubusercontent.com/sensescape/xyz-elevation-dots/master/images/dots-title4.png)
 
 
 
