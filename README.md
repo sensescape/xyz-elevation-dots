@@ -6,23 +6,10 @@
 ### Manila
 [https://sensescape.github.io/xyz-elevation-dots/#9/14.1627/-238.2778](https://sensescape.github.io/xyz-elevation-dots/#9/14.1627/-238.2778)
 
-..............................
-.
-.
-.
-.
-.
-.
+### Hong Kong
+[https://sensescape.github.io/xyz-elevation-dots/#12/22.2629/-245.8196](https://sensescape.github.io/xyz-elevation-dots/#12/22.2629/-245.8196)
 
-The dot is pure potentiality.
-
-..............................
-.
-.
-.
-.
-.
-.
+### Explore xyz
 
 [https://explore.xyz.here.com](https://explore.xyz.here.com)
 
