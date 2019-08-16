@@ -10,6 +10,7 @@
 [https://sensescape.github.io/xyz-elevation-dots/#12/22.2629/-245.8196](https://sensescape.github.io/xyz-elevation-dots/#12/22.2629/-245.8196)
 
 ![DOTS](https://raw.githubusercontent.com/sensescape/xyz-elevation-dots/master/images/xyz-elevation-dots-map1.jpg)
+[https://sensescape.github.io/xyz-elevation-dots/#12/21.3616/-157.8232](https://sensescape.github.io/xyz-elevation-dots/#12/21.3616/-157.8232)
 
 ### Explore xyz
 
