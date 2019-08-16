@@ -2,6 +2,10 @@
 
 ### Tokyo
 [https://sensescape.github.io/xyz-elevation-dots/#8/35.668/-220.387](https://sensescape.github.io/xyz-elevation-dots/#8/35.668/-220.387)
+
+### Manila
+[https://sensescape.github.io/xyz-elevation-dots/#9/14.1627/-238.2778](https://sensescape.github.io/xyz-elevation-dots/#9/14.1627/-238.2778)
+
 ..............................
 .
 .
