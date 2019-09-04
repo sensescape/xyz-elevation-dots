@@ -36,12 +36,94 @@ global:
     roads_text_fill:              [0.800,0.800,0.800]
     roads_text_stroke:            [0.110,0.110,0.110]
 
+    #ux/ui
+    ux_language: false             # l10n language code, trusting OSM in v0.10 tiles, fixed in v1.0 tiles
+    ux_language_fallback: false    # l10n language code, trusting OSM in v0.10 tiles, fixed in v1.0 tiles
     ux_language_text_source: |
         function() {
             // if a ux_langauge has been defined use that, else if there is feature name in the fallback_ux_language then use that, else use the feature's default name in the local language
             return (global.ux_language && feature['name:'+global.ux_language]) || (global.ux_language_fallback && feature['name:'+global.ux_language_fallback]) || feature.name;
         }
-
+    ux_language_text_source_left: |
+        function() {
+            // if a ux_langauge has been defined use that, else if there is feature name in the fallback_ux_language then use that, else use the feature's default name in the local language
+            return (global.ux_language && feature['name:left:'+global.ux_language]) || (global.ux_language_fallback && feature['name:left:'+global.ux_language_fallback]) || feature['name:left'];
+        }
+    ux_language_text_source_right: |
+        function() {
+            // if a ux_langauge has been defined use that, else if there is feature name in the fallback_ux_language then use that, else use the feature's default name in the local language
+            return (global.ux_language && feature['name:right:'+global.ux_language]) || (global.ux_language_fallback && feature['name:right:'+global.ux_language_fallback]) || feature['name:right'];
+        }
+    ux_language_text_source_boundary_lines_left_right:
+        left: global.ux_language_text_source_left
+        right: global.ux_language_text_source_right
+    ux_language_text_source_boundary_lines: |
+        function() {
+           var right = (global.ux_language && feature['name:right:'+global.ux_language]) || (global.ux_language_fallback && feature['name:right:'+global.ux_language_fallback]) || feature['name:right'];
+           var left = (global.ux_language && feature['name:left:'+global.ux_language]) || (global.ux_language_fallback && feature['name:left:'+global.ux_language_fallback]) || feature['name:left'];
+           if( right && left ) {
+               //if( right.includes(' ') || left.includes(' ') ) {
+                   return left + " - " + right;
+               //} else {
+               //    return right + '\n' + left;
+               //}
+           } else {
+               return (global.ux_language && feature['name:'+global.ux_language]) || (global.ux_language_fallback && feature['name:'+global.ux_language_fallback]) || feature.name;
+           }
+        }
+    ux_language_text_source_short: |
+        function() {
+            return (global.ux_language && feature['name:short:'+global.ux_language]) || (global.ux_language_fallback && feature['name:short:'+global.ux_language_fallback]) || feature['name:short'];
+        }
+    ux_language_text_source_short_proxy_name: |
+        function() {
+            var name  = (global.ux_language && feature['name:'+global.ux_language]) || (global.ux_language_fallback && feature['name:'+global.ux_language_fallback]) || feature['name'] || '';
+            var short = (global.ux_language && feature['name:short:'+global.ux_language]) || (global.ux_language_fallback && feature['name:short:'+global.ux_language_fallback]) || feature['name:short'];
+            return short ? name : '';
+        }
+    ux_language_text_source_abbreviation: |
+        function() {
+            var name  = (global.ux_language && feature['name:'+global.ux_language]) || (global.ux_language_fallback && feature['name:'+global.ux_language_fallback]) || feature['name'] || '';
+            var abbrev = (global.ux_language && feature['name:abbreviation:'+global.ux_language]) || (global.ux_language_fallback && feature['name:abbreviation:'+global.ux_language_fallback]) || feature['name:abbreviation'];
+            return abbrev || name;
+        }
+    ux_language_text_source_iata: |
+        function() {
+            var name = (global.ux_language && feature['name:'+global.ux_language]) || (global.ux_language_fallback && feature['name:'+global.ux_language_fallback]) || feature['name'];
+            if(feature.iata) {
+                if (name) {
+                    return name + ' (' + feature.iata + ')';
+                }
+                else {
+                    return feature.iata;
+                }
+            } else {
+                return name;
+            }
+        }
+    ux_language_text_source_ocean: |
+        function() {
+            var name = (global.ux_language && feature['name:'+global.ux_language]) || (global.ux_language_fallback && feature['name:'+global.ux_language_fallback]) || feature['name'] || '';
+            name = name.split(' ').join('\n');
+            return name.split('').join('  ');
+        }
+    ux_language_text_source_sea: |
+        function() {
+            var name = (global.ux_language && feature['name:'+global.ux_language]) || (global.ux_language_fallback && feature['name:'+global.ux_language_fallback]) || feature['name'] || '';
+            name = name.split(' ').join('\n');
+            return name.split('').join(' ');
+        }
+    ux_language_text_source_continent_stacked_only: |
+        function() {
+            var name = (global.ux_language && feature['name:'+global.ux_language]) || (global.ux_language_fallback && feature['name:'+global.ux_language_fallback]) || feature['name'] || '';
+            return name.split(' ').join('\n');
+        }
+    ux_language_text_source_continent: |
+        function() {
+            var name = (global.ux_language && feature['name:'+global.ux_language]) || (global.ux_language_fallback && feature['name:'+global.ux_language_fallback]) || feature['name'] || '';
+            name = name.split(' ').join('\n');
+            return name.split('').join(' ');
+        }
     ux_language_text_source_road_ref_and_name: |
         function() {
             // if a ux_langauge has been defined use that, else if there is feature name in the fallback_ux_language then use that, else use the feature's default name in the local language
@@ -69,6 +151,25 @@ global:
                 return name;
             }
             */
+        }
+    ux_language_text_source_piste_advanced: |
+        function() {
+            var name = (global.ux_language && feature['name:'+global.ux_language]) || (global.ux_language_fallback && feature['name:'+global.ux_language_fallback]) || feature['name'];
+            return name ? ('◆ ' + name) : '◆';
+        }
+    ux_language_text_source_piste_expert: |
+        function() {
+            var name = (global.ux_language && feature['name:'+global.ux_language]) || (global.ux_language_fallback && feature['name:'+global.ux_language_fallback]) || feature['name'];
+            return name ? ('◆◆ ' + name) : '◆◆';
+        }
+    ux_language_text_source_building_and_address: |
+        function() {
+            var name = (global.ux_language && feature['name:'+global.ux_language]) || (global.ux_language_fallback && feature['name:'+global.ux_language_fallback]) || feature['name'];
+            if (name && feature.addr_housenumber) {
+                return name + '\n' + feature.addr_housenumber;
+            } else {
+                return name;
+            }
         }
 
 # Fonts
@@ -948,8 +1049,197 @@ layers:
                 buffer: 3px
                 font:
                     family: global.text_font_family
-                    fill: [0.900,0.900,0.900]
+                    fill: [0.950,0.950,0.950]
             # END NOTE
+
+        country:
+            filter:
+                kind: country
+                $zoom: { min: 2, max: 9 }
+            draw:
+                text-blend-order:
+                    priority: 3
+                    visible: true
+                    text_source: global.ux_language_text_source
+                    font:
+                        fill: [0.700,0.700,0.700]
+                        stroke: { color: [0.100,0.100,0.100], width: 4px }
+            country-z2-3:
+                filter:
+                    $zoom: [2,3]
+                draw:
+                    text-blend-order:
+                        priority: 10
+                        buffer: 10px
+                        font:
+                            size: 11px
+                early-ones-z2:
+                    filter:
+                        $zoom: [2]
+                        not: { name: [United States of America,Brasil,中华人民共和国,Россия,Canada,Kalaallit Nunaat,Ísland,Australia,India,日本,Guam,Indonesia,South Africa,مصر,Nigeria,Kenya] }
+                    draw:
+                        text-blend-order:
+                            visible: false
+                early-ones-z3:
+                    filter:
+                        $zoom: [3]
+                        name: [Nederland,Luxembourg,Liechtenstein,San Marino,Civitatis Vaticanæ,Crna Gora,Македонија,The Gambia,Burundi,Swaziland,الإمارات العربية المتحدة,العراق,Singapore,El Salvador,Belize,Trinidad and Tobago, Saint Lucia, Montserrat,Anguilla,República Dominicana,Bahamas,British Virgin Islands,Antigua and Barbuda,Grenada,Sint Maarten,Saint Kitts and Nevis,Cayman Islands,België - Belgique - Belgien,Deutschland,España]
+                    draw:
+                        text-blend-order:
+                            visible: false
+            country-z4:
+                filter:
+                    $zoom: [4]
+                draw:
+                    text-blend-order:
+                        buffer: 10px
+                        priority: 8
+                        font:
+                            size: 13px
+                early-ones-z4:
+                    filter:
+                        name: [Nederland,Luxembourg,Liechtenstein,San Marino,Civitatis Vaticanæ,Crna Gora,Македонија,The Gambia,Burundi,Swaziland,الإمارات العربية المتحدة,العراق,Singapore,El Salvador,Belize,Trinidad and Tobago, Saint Lucia, Montserrat,Anguilla,República Dominicana,Bahamas,British Virgin Islands,Antigua and Barbuda,Grenada,Sint Maarten,Saint Kitts and Nevis,Cayman Islands,België - Belgique - Belgien,Deutschland,España,Magyarország,Österreich,Polska,Хуссар Ирыстон,Аҧсны - Абхазия]
+                    draw:
+                        text-blend-order:
+                            visible: false
+            country-z5:
+                filter:
+                    $zoom: [5]
+                draw:
+                    text-blend-order:
+                        priority: 8
+                        font:
+                            size: 16px
+                early-ones-z5:
+                    filter:
+                        # South Ossetia and Abkhazia aren't countries (they are disputed areas)
+                        - name: [Luxembourg,Liechtenstein,San Marino,Civitatis Vaticanæ,El Salvador,Belize,België - Belgique - Belgien,"Хуссар Ирыстон - Южная Осетия","Хуссар Ирыстон","Аҧсны - Абхазия","Լեռնային Ղարաբաղի Հանրապետությու (Nagorno-Karabakh Republic)"]
+                        - population: { max: 5000000 }
+                    draw:
+                        text-blend-order:
+                            visible: false
+            country-z6:
+                filter:
+                    $zoom: [6]
+                draw:
+                    text-blend-order:
+                        priority: 8
+                        font:
+                            size: 19px
+                small-ones-z6:
+                    filter:
+                        # South Ossetia and Abkhazia aren't countries (they are disputed areas)
+                        - name: [Luxembourg,Liechtenstein,San Marino,Civitatis Vaticanæ,België - Belgique - Belgien,"Хуссар Ирыстон - Южная Осетия","Хуссар Ирыстон","Аҧсны - Абхазия","Լեռնային Ղարաբաղի Հանրապետությու (Nagorno-Karabakh Republic)"]
+                        - population: { max: 5000000 }
+                    draw:
+                        text-blend-order:
+                            visible: false
+            country-z7:
+                # South Ossetia and Abkhazia aren't countries (they are disputed areas)
+                filter: { $zoom: { min: 7, max: 9 } }
+                draw:
+                    text-blend-order:
+                        font:
+                            size: 19px
+                small-ones-z7:
+                    filter:
+                        $zoom: [7]
+                        # South Ossetia and Abkhazia aren't countries (they are disputed areas)
+                        name: [Liechtenstein,San Marino,Civitatis Vaticanæ,"Хуссар Ирыстон - Южная Осетия","Хуссар Ирыстон","Аҧсны - Абхазия","Լեռնային Ղարաբաղի Հանրապետությու (Nagorno-Karabakh Republic)"]
+                    draw:
+                        text-blend-order:
+                            visible: false
+                small-pop:
+                    filter:
+                        - population: { max: 5000000 }
+                    draw:
+                        text-blend-order:
+                            priority: 30
+                            font:
+                                size: 12px
+
+        region:
+            filter:
+                kind: region
+                $zoom: { min: 4, max: 9 }
+            draw:
+                text-blend-order:
+                    priority: 14
+                    visible: false
+                    text_source: global.ux_language_text_source_short
+                    font:
+                        size: 11px
+                        weight: normal
+                        fill: [0.600,0.600,0.600]
+                        stroke: { color: [0.100,0.100,0.100], width: 4px }
+            region-z4:
+                filter:
+                    $zoom: [4]
+                    not: { name: [Western Cape,Eastern Cape,Northern Cape,North West,Limpopo,KwaZulu-Natal,Hamburg,Freie und Hansestadt Hamburg,Neuchâtel,Nordrhein-Westfalen,Haute-Normandie,Baden-Württemberg,Bayern,Sachsen-Anhalt,Berlin,Mecklenburg-Vorpommern,Schleswig-Holstein,Brandenburg,Niedersachsen,Saarland,Thüringen,Hessen,Sachsen] }
+                draw:
+                    text-blend-order:
+                        visible: true
+                        # font:
+                        #     fill: [0.70,0.70,0.70]
+            region-z5:
+                filter:
+                    $zoom: [5]
+                    not: { name: [Western Cape,Eastern Cape,Northern Cape,North West,Limpopo,KwaZulu-Natal,Hamburg,Freie und Hansestadt Hamburg,Neuchâtel,Nordrhein-Westfalen,Haute-Normandie,Baden-Württemberg,Bayern,Sachsen-Anhalt,Berlin,Mecklenburg-Vorpommern,Schleswig-Holstein,Brandenburg,Niedersachsen,Saarland,Thüringen,Hessen,Sachsen] }
+                draw:
+                    text-blend-order:
+                        visible: true
+                        font:
+                            size: 15px
+            region-z6:
+                filter:
+                    $zoom: [6]
+                    not: { name: [Western Cape,Eastern Cape,Northern Cape,North West,Limpopo,KwaZulu-Natal,Hamburg,Freie und Hansestadt Hamburg,Neuchâtel,Nordrhein-Westfalen,Haute-Normandie,Baden-Württemberg,Bayern,Sachsen-Anhalt,Berlin,Mecklenburg-Vorpommern,Schleswig-Holstein,Brandenburg,Niedersachsen,Saarland,Thüringen,Hessen,Sachsen] }
+                draw:
+                    text-blend-order:
+                        visible: true
+                        font:
+                            size: 16px
+                            transform: uppercase
+
+            region-z7-z8:
+                filter: { $zoom: [7,8] }
+                draw:
+                    text-blend-order:
+                        visible: true
+                        text_source: global.ux_language_text_source_short_proxy_name
+                        font:
+                            size: 18px
+                            transform: uppercase
+                pesky:
+                    filter:
+                        $zoom: [7]
+                        name: [Western Cape,Eastern Cape,Northern Cape,North West,Limpopo,KwaZulu-Natal,Hamburg,Freie und Hansestadt Hamburg,Neuchâtel,Nordrhein-Westfalen,Haute-Normandie,Baden-Württemberg,Bayern,Sachsen-Anhalt,Berlin,Mecklenburg-Vorpommern,Schleswig-Holstein,Brandenburg,Niedersachsen,Saarland,Thüringen,Hessen,Sachsen]
+                    draw:
+                        text-blend-order:
+                            visible: false
+                abbrev-small-ones-z7:
+                    filter:
+                        $zoom: [7]
+                        name: [Delaware,New Jersey,Connecticut,Rhode Island,Massachusetts,New Hampshire,Vermont]
+                    draw:
+                        text-blend-order:
+                            text_source: global.ux_language_text_source_abbreviation
+                            font: { transform: uppercase }
+                region-z8:
+                    filter:
+                        $zoom: [8]
+                    draw:
+                        text-blend-order:
+                            text_source: global.ux_language_text_source
+                    no-pop:
+                        filter:
+                            any:
+                                - population: false
+                                - population: { max: 1000000 }
+                        draw:
+                            text-blend-order:
+                                font:
+                                    size: 12px
 
         populated-places:
             filter:
