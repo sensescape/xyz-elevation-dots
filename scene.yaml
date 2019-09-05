@@ -703,7 +703,7 @@ layers:
                     - kind_detail: [steps, track, pier]
             draw:
                 lines:
-                    color: global.white_color
+                    color: global.mid_color
                     width: [[14, 0px], [16, 0.15px], [17, 2.5px], [20, 3m]]
             early:
                 filter:
@@ -717,13 +717,13 @@ layers:
                 filter: { kind_detail: pedestrian }
                 draw:
                     lines:
-                        color: global.white_color
+                        color: global.mid_color
                         width: [[14, 0px], [16, 0.15px], [17, 2.5px], [20, 3m]]
             footway:
                 filter: { kind_detail: footway }
                 draw:
                     lines:
-                        color: global.white_color
+                        color: global.mid_color
                         width: [[14, 0px], [16, 0.15px], [17, 2.5px], [20, 3m]]
                 bridge:
                     filter: { is_bridge: true }
@@ -731,7 +731,7 @@ layers:
                         lines:
                             cap: round
                             outline:
-                                color: [[13, global.light_color], [15, global.mid_color]]
+                                color: global.dark_color
                                 cap: butt
             bridge:
                 filter: { is_bridge: true }
@@ -739,7 +739,7 @@ layers:
                     lines:
                         cap: round
                         outline:
-                            color: global.mid_color
+                            color: global.dark_color
                             cap: butt
             labels-path:
                 filter: { $zoom: { min: 18 } }
@@ -755,16 +755,16 @@ layers:
             filter: { kind: path, kind_detail: track }
             draw:
                 lines:
-                    color: global.white_color
+                    color: global.mid_color
                     width: [[13, 0px], [16, 0.15px], [17, 2.5px], [20, 4m]]
             bridge:
                 filter: { is_bridge: true }
                 draw:
                     lines:
                         cap: butt
-                        color: global.white_color
+                        color: global.offwhite_color
                         outline:
-                            color: [[13, global.light_color], [15, global.black_color]]
+                            color: global.extralight_color
                             cap: butt
 
             labels-track:
@@ -786,9 +786,9 @@ layers:
             draw:
                 lines:
                     dash: [0.75, 0.75]
-                    dash_background_color: global.white_color
+                    dash_background_color: global.mid_color
                     order: global.feature_order
-                    color: global.midlight_color
+                    color: global.dark_color
                     width: [[15, 0.5px], [18, 3px], [19, 1.5m]]
             labels-steps:
                 filter: { $zoom: { min: 18 } }
@@ -902,8 +902,9 @@ layers:
             polygons:
                 visible: false
                 order: 329
-                color: [0.100,0.100,0.100,0.85]
-                style: polygons_transparent
+                # color: [0.100,0.100,0.100,0.65]
+                # style: polygons_transparent
+                style: terrain-pattern-buildings
 
         footprints:
             filter:
@@ -1477,6 +1478,17 @@ styles:
         shaders:
             uniforms:
                 u_tint: [0.190,0.190,0.190]
+                u_fill: [0.100,0.100,0.100]
+            blocks:
+                filter: |
+                    color.rgb = mix(u_tint.rgb, u_fill.rgb, color.rgb);
+
+    terrain-pattern-buildings:
+        base: polygons
+        mix: [elevation-ramp, terrain-pattern]
+        shaders:
+            uniforms:
+                u_tint: [0.450,0.450,0.450]
                 u_fill: [0.100,0.100,0.100]
             blocks:
                 filter: |
